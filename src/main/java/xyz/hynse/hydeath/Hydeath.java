@@ -23,7 +23,8 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 Item item = event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), itemStack);
                 item.canMobPickup();
                 item.setInvulnerable(true);
-                item.setTicksLived(16);
+                item.setTicksLived(200);
+                item.setWillAge(true);
                 item.setGlowing(true);
             }
         }, 1);
