@@ -4,3 +4,4 @@ main: xyz.hynse.hydeath.Hydeath
 api-version: '1.20'
 authors: [MidnightTale]
 website: hynse.xyz
+folia-supported: true

@@ -1,17 +1,30 @@
 package xyz.hynse.hydeath;
 
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
+import xyz.hynse.hydeath.Scheduler;
 
-public final class Hydeath extends JavaPlugin {
+public final class Hydeath extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-
+        getServer().getPluginManager().registerEvents(this, this);
     }
 
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Scheduler.runTaskForEntity(event.getEntity(), this, () -> {
+            for (ItemStack itemStack : event.getDrops()) {
+                Item item = event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), itemStack);
+                item.setFireTicks(0); // Prevent burning
+                item.setTicksLived(60 * 5); // Set a longer despawn time (5 minutes)
+                item.setGlowing(true); // Make the item glow
+            }
+        }, 1); // You can provide a "retired" runnable if needed
     }
 }
