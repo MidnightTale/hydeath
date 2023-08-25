@@ -21,10 +21,11 @@ public final class Hydeath extends JavaPlugin implements Listener {
         Scheduler.runTaskForEntity(event.getEntity(), this, () -> {
             for (ItemStack itemStack : event.getDrops()) {
                 Item item = event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), itemStack);
-                item.setFireTicks(0); // Prevent burning
-                item.setTicksLived(60 * 5); // Set a longer despawn time (5 minutes)
-                item.setGlowing(true); // Make the item glow
+                item.canMobPickup();
+                item.setInvulnerable(true);
+                item.setTicksLived(16);
+                item.setGlowing(true);
             }
-        }, 1); // You can provide a "retired" runnable if needed
+        }, 1);
     }
 }
