@@ -26,9 +26,8 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 item.setGlowing(true);
                 Scheduler.runTaskForEntity(event.getEntity(), this, () -> {
                     item.remove();
-                }, 100);
+                }, 20 * 30);
             }
         }, 1);
-        event.getDrops().clear();
     }
 }
