@@ -1,5 +1,6 @@
 package xyz.hynse.hydeath;
-
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -12,8 +13,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Objects;
+
 public final class Hydeath extends JavaPlugin implements Listener {
 
     private double spreadAmount;
@@ -27,6 +31,9 @@ public final class Hydeath extends JavaPlugin implements Listener {
     public void onEnable() {
         loadConfig();
         getServer().getPluginManager().registerEvents(this, this);
+
+        // Register the reload command
+        Objects.requireNonNull(getCommand("hydeathreload")).setExecutor(this);
     }
 
     private void loadConfig() {
@@ -47,6 +54,17 @@ public final class Hydeath extends JavaPlugin implements Listener {
             glowing = itemSettingsSection.getBoolean("glowing", true);
             unlimitedLifetime = itemSettingsSection.getBoolean("unlimitedLifetime", true);
         }
+    }
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String label, String[] args) {
+        if (command.getName().equalsIgnoreCase("hydeathreload")) {
+            reloadConfig();
+            loadConfig();
+            sender.sendMessage("Hydeath configuration reloaded.");
+            return true;
+        }
+        return false;
     }
 
     @EventHandler

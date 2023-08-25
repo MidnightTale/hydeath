@@ -5,3 +5,7 @@ api-version: '1.20'
 authors: [MidnightTale]
 website: hynse.xyz
 folia-supported: true
+commands:
+  hydeathreload:
+    description: Reloads the Hydeath configuration
+    usage: /hydeathreload
