@@ -2,6 +2,7 @@ package xyz.hynse.hydeath;
 
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -42,9 +43,9 @@ public class Scheduler {
     }
     public static void runTaskForEntity(Entity entity, Plugin plugin, Runnable entityTask, long initialDelayTicks) {
         if (isFolia()) {
-            entity.getScheduler().runDelayed(plugin, task -> entityTask.run(), null, initialDelayTicks * 20L);
+            entity.getScheduler().runDelayed(plugin, task -> entityTask.run(), null, initialDelayTicks);
         } else {
-            Bukkit.getScheduler().runTaskLater(plugin, entityTask, initialDelayTicks * 20L);
+            Bukkit.getScheduler().runTaskLater(plugin, entityTask, initialDelayTicks);
         }
     }
 }
