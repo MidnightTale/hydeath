@@ -29,6 +29,6 @@ public final class Hydeath extends JavaPlugin implements Listener {
                     item.setUnlimitedLifetime(false);
                 }, 100);
             }
-        }, 0);
+        }, 1);
     }
 }
