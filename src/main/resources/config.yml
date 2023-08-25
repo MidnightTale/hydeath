@@ -1,0 +1,16 @@
+# config.yml
+
+# Spread amount for dropped items
+# Adjust how much the dropped items spread out when a player dies
+spreadAmount: 5
+
+# Percentage of experience to drop (0-100)
+# Set the percentage of a player's experience to drop as orbs upon death
+experienceDropPercentage: 100
+
+# Item settings for dropped items
+itemSettings:
+  canMobPickup: true   # Allow mobs to pick up the dropped items
+  invulnerable: true   # Make dropped items invulnerable
+  glowing: true        # Make dropped items glow
+  unlimitedLifetime: true  # Make dropped items never despawn
