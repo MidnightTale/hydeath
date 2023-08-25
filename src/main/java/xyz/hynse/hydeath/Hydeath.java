@@ -1,4 +1,5 @@
 package xyz.hynse.hydeath;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -93,25 +94,27 @@ public final class Hydeath extends JavaPlugin implements Listener {
                         Math.random() * spreadAmount - spreadAmount / 2
                 );
                 item.setVelocity(velocity);
-
-
                 int playerTotalExp = ExperienceUtil.getPlayerExp(player);
 
                 // Calculate and drop experience orbs
                 int expToDrop = playerTotalExp * experienceDropPercentage / 100;
                 int maxExpPerOrb = 30; // Set your desired maximum experience per orb
 
-                while (expToDrop > 0) {
+                int orbsSpawned = 0;
+                while (expToDrop > 0 && orbsSpawned < 100) {  // Limit to a reasonable number of orbs
                     int currentExp = Math.min(expToDrop, maxExpPerOrb);
 
-                    // Create experience orbs
-                    player.getWorld().spawn(player.getLocation(), ExperienceOrb.class).setExperience(currentExp);
+                    // Create experience orbs with a delay
+                    Scheduler.runTaskForEntity(event.getEntity(), this, () -> {
+                        player.getWorld().spawn(player.getLocation(), ExperienceOrb.class).setExperience(currentExp);
+                    }, orbsSpawned * 5);  // Delay between orbs (adjust the delay as needed)
 
                     // Calculate remaining experience and adjust maxExpPerOrb
                     int remainingExp = expToDrop - currentExp;
                     maxExpPerOrb = remainingExp / (player.getLevel() + 1);
 
                     expToDrop -= currentExp;
+                    orbsSpawned++;
                 }
 
                 // Clear player's experience
