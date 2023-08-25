@@ -22,10 +22,12 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 item.setCanMobPickup(true);
                 item.setInvulnerable(true);
                 item.setGlowing(true);
-                Scheduler.runTaskForEntity(event.getEntity(), this, () -> {
-                    item.remove();
-                }, 20 * 30);
+                Scheduler.runTaskForEntity(item, this, item::remove, 20 * 30);
+                event.getDrops().remove(itemStack);
             }
         }, 1);
     }
 }
+
+
+
