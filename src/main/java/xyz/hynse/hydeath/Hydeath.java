@@ -95,22 +95,23 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 item.setVelocity(velocity);
 
 
-                // Calculate and drop experience orbs using the ExperienceUtil class
                 int playerTotalExp = ExperienceUtil.getPlayerExp(player);
+
+                // Calculate and drop experience orbs
                 int expToDrop = playerTotalExp * experienceDropPercentage / 100;
                 int maxExpPerOrb = 30; // Set your desired maximum experience per orb
 
                 while (expToDrop > 0) {
                     int currentExp = Math.min(expToDrop, maxExpPerOrb);
-                    ExperienceOrb expOrb = player.getWorld().spawn(player.getLocation(), ExperienceOrb.class);
 
-                    if (currentExp >= maxExpPerOrb) {
-                        expOrb.setExperience(maxExpPerOrb);
-                        expToDrop -= maxExpPerOrb;
-                    } else {
-                        expOrb.setExperience(currentExp);
-                        expToDrop = 0;
-                    }
+                    // Create experience orbs
+                    player.getWorld().spawn(player.getLocation(), ExperienceOrb.class).setExperience(currentExp);
+
+                    // Calculate remaining experience and adjust maxExpPerOrb
+                    int remainingExp = expToDrop - currentExp;
+                    maxExpPerOrb = remainingExp / (player.getLevel() + 1);
+
+                    expToDrop -= currentExp;
                 }
 
                 // Clear player's experience
