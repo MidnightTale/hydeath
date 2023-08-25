@@ -1,5 +1,6 @@
 package xyz.hynse.hydeath;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -22,7 +23,6 @@ import java.util.Objects;
 public final class Hydeath extends JavaPlugin implements Listener {
 
     private double spreadAmount;
-    private int experienceDropPercentage;
     private boolean canMobPickup;
     private boolean invulnerable;
     private boolean glowing;
@@ -46,7 +46,6 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
         // Load values from the config.yml
         spreadAmount = config.getDouble("spreadAmount", 0.2);
-        experienceDropPercentage = config.getInt("experienceDropPercentage", 100);
 
         ConfigurationSection itemSettingsSection = config.getConfigurationSection("itemSettings");
         if (itemSettingsSection != null) {
@@ -71,6 +70,23 @@ public final class Hydeath extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        String playerName = player.getName();
+
+        // Get player's location and world
+        int x = player.getLocation().getBlockX();
+        int y = player.getLocation().getBlockY();
+        int z = player.getLocation().getBlockZ();
+        String worldName = player.getWorld().getName();
+
+        String message = ChatColor.GRAY + "[" + ChatColor.RED + "☠" + ChatColor.GRAY + "] " +
+                ChatColor.YELLOW + playerName + ChatColor.RED + " has died at " +
+                ChatColor.WHITE + "X: " + ChatColor.GRAY + x + ChatColor.DARK_GRAY + ", " +
+                ChatColor.WHITE + "Y: " + ChatColor.GRAY + y + ChatColor.DARK_GRAY + ", " +
+                ChatColor.WHITE + "Z: " + ChatColor.GRAY + z + ChatColor.WHITE + " in " +
+                ChatColor.AQUA + worldName + ChatColor.GRAY + ".";
+
+        player.sendMessage(message);
+
 
         // Store the player's inventory contents
         ItemStack[] originalInventory = player.getInventory().getContents();
@@ -94,27 +110,12 @@ public final class Hydeath extends JavaPlugin implements Listener {
                         Math.random() * spreadAmount - spreadAmount / 2
                 );
                 item.setVelocity(velocity);
+
                 int playerTotalExp = ExperienceUtil.getPlayerExp(player);
-
-                // Calculate and drop experience orbs
-                int expToDrop = playerTotalExp * experienceDropPercentage / 100;
-                int maxExpPerOrb = 30; // Set your desired maximum experience per orb
-
-                int orbsSpawned = 0;
-                while (expToDrop > 0 && orbsSpawned < 100) {  // Limit to a reasonable number of orbs
-                    int currentExp = Math.min(expToDrop, maxExpPerOrb);
-
-                    // Create experience orbs with a delay
-                    Scheduler.runTaskForEntity(event.getEntity(), this, () -> {
-                        player.getWorld().spawn(player.getLocation(), ExperienceOrb.class).setExperience(currentExp);
-                    }, orbsSpawned * 5);  // Delay between orbs (adjust the delay as needed)
-
-                    // Calculate remaining experience and adjust maxExpPerOrb
-                    int remainingExp = expToDrop - currentExp;
-                    maxExpPerOrb = remainingExp / (player.getLevel() + 1);
-
-                    expToDrop -= currentExp;
-                    orbsSpawned++;
+                while (playerTotalExp > 0) {
+                    int currentExp = Math.min(playerTotalExp, 100);
+                    player.getWorld().spawn(player.getLocation(), ExperienceOrb.class).setExperience(currentExp);
+                    playerTotalExp -= currentExp;
                 }
 
                 // Clear player's experience
