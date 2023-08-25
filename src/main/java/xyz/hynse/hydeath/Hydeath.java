@@ -71,24 +71,28 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 // Adjust item's velocity for spread
                 Vector velocity = new Vector(
                         Math.random() * spreadAmount - spreadAmount / 2,
-                        Math.random() * spreadAmount - spreadAmount / 2,
+                        Math.random() * (spreadAmount / 3) - (spreadAmount / 3) / 2,
                         Math.random() * spreadAmount - spreadAmount / 2
                 );
                 item.setVelocity(velocity);
+
+
+                // Calculate and drop experience orbs
+                int expToDrop = ExperienceUtil.getPlayerExp(player);
+                int expAmount = expToDrop * experienceDropPercentage / 100;
+
+                // Drop experience orbs with a limit per orb
+                int maxExpPerOrb = 30; // Set your desired maximum experience per orb
+                while (expAmount > 0) {
+                    int currentExp = Math.min(expAmount, maxExpPerOrb);
+                    player.getWorld().spawn(player.getLocation(), ExperienceOrb.class).setExperience(currentExp);
+                    expAmount -= currentExp;
+                }
+
+                // Clear player's experience
+                player.setLevel(0);
+                player.setExp(0);
             }
         }
-
-        // calculate and drop experience orbs
-        int expToDrop = ExperienceUtil.getPlayerExp(player);
-        int expAmount = expToDrop * experienceDropPercentage / 100;
-        while (expAmount > 0) {
-            int currentExp = Math.min(expAmount, 100);
-            player.getWorld().spawn(player.getLocation(), ExperienceOrb.class).setExperience(currentExp);
-            expAmount -= currentExp;
-        }
-
-        // Clear player's experience
-        player.setLevel(0);
-        player.setExp(0);
     }
 }

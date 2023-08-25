@@ -2,11 +2,11 @@
 
 # Spread amount for dropped items
 # Adjust how much the dropped items spread out when a player dies
-spreadAmount: 5
+spreadAmount: 2
 
 # Percentage of experience to drop (0-100)
 # Set the percentage of a player's experience to drop as orbs upon death
-experienceDropPercentage: 100
+experienceDropPercentage: 30
 
 # Item settings for dropped items
 itemSettings:
