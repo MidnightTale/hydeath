@@ -1,11 +1,11 @@
 package xyz.hynse.hydeath;
 
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import xyz.hynse.hydeath.Scheduler;
 
@@ -21,12 +21,14 @@ public final class Hydeath extends JavaPlugin implements Listener {
         Scheduler.runTaskForEntity(event.getEntity(), this, () -> {
             for (ItemStack itemStack : event.getDrops()) {
                 Item item = event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), itemStack);
-                item.canMobPickup();
+                item.setCanMobPickup(true);
                 item.setInvulnerable(true);
-                item.setTicksLived(200);
-                item.setWillAge(true);
+                item.setUnlimitedLifetime(true);
                 item.setGlowing(true);
+                Scheduler.runAsyncSchedulerDelay(this, player -> {
+                    item.setUnlimitedLifetime(false);
+                }, 100);
             }
-        }, 1);
+        }, 0);
     }
 }
