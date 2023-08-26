@@ -1,6 +1,7 @@
 package xyz.hynse.hydeath;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -10,6 +11,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.server.PluginDisableEvent;
+import org.bukkit.event.world.WorldLoadEvent;
+import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.entity.Item;
@@ -35,6 +40,13 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
         // Register the reload command
         Objects.requireNonNull(getCommand("hydeathreload")).setExecutor(this);
+
+        setKeepInventoryForAllWorlds(true);
+    }
+
+    @Override
+    public void onDisable() {
+        setKeepInventoryForAllWorlds(false);
     }
 
     private void loadConfig() {
@@ -54,6 +66,33 @@ public final class Hydeath extends JavaPlugin implements Listener {
             glowing = itemSettingsSection.getBoolean("glowing", true);
             unlimitedLifetime = itemSettingsSection.getBoolean("unlimitedLifetime", true);
         }
+    }
+
+    @EventHandler
+    public void onWorldLoad(WorldLoadEvent event) {
+        setKeepInventory(event.getWorld(), true);
+    }
+
+    @EventHandler
+    public void onWorldUnload(WorldUnloadEvent event) {
+        setKeepInventory(event.getWorld(), false);
+    }
+
+    @EventHandler
+    public void onPluginDisable(PluginDisableEvent event) {
+        if (event.getPlugin().equals(this)) {
+            setKeepInventoryForAllWorlds(false);
+        }
+    }
+
+    private void setKeepInventoryForAllWorlds(boolean value) {
+        for (World world : getServer().getWorlds()) {
+            setKeepInventory(world, value);
+        }
+    }
+
+    private void setKeepInventory(World world, boolean value) {
+        world.setGameRuleValue("keepInventory", String.valueOf(value));
     }
 
     @Override
