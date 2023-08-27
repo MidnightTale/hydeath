@@ -1,14 +1,14 @@
 package xyz.hynse.hydeath;
 
+import io.papermc.paper.threadedregions.scheduler.GlobalRegionScheduler;
 import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
-import io.papermc.paper.threadedregions.scheduler.EntityScheduler;
 public class Scheduler {
 
     private static Boolean IS_FOLIA = null;
@@ -46,6 +46,15 @@ public class Scheduler {
             entity.getScheduler().runDelayed(plugin, task -> entityTask.run(), null, initialDelayTicks);
         } else {
             Bukkit.getScheduler().runTaskLater(plugin, entityTask, initialDelayTicks);
+        }
+    }
+    public static void runGlobal(Plugin plugin, Runnable task, long initialDelayTicks) {
+        if (isFolia()) {
+            GlobalRegionScheduler globalRegionScheduler = Bukkit.getGlobalRegionScheduler();
+            Consumer<ScheduledTask> taskWrapper = scheduledTask -> task.run();
+            globalRegionScheduler.runDelayed(plugin, taskWrapper, initialDelayTicks);
+        } else {
+            Bukkit.getScheduler().runTaskLater(plugin, task, initialDelayTicks);
         }
     }
 }

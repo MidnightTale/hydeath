@@ -11,8 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.world.WorldLoadEvent;
 import org.bukkit.event.world.WorldUnloadEvent;
 import org.bukkit.inventory.ItemStack;
@@ -35,13 +33,25 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        Scheduler.runGlobal(this, () -> {
+            for (World world : Bukkit.getWorlds()) {
+                world.setGameRuleValue("keepInventory", "true");
+            }
+        }, 1);
         loadConfig();
         getServer().getPluginManager().registerEvents(this, this);
 
         // Register the reload command
         Objects.requireNonNull(getCommand("hydeathreload")).setExecutor(this);
     }
-
+    @Override
+    public void onDisable() {
+        Scheduler.runGlobal(this, () -> {
+            for (World world : Bukkit.getWorlds()) {
+                world.setGameRuleValue("keepInventory", "false");
+            }
+        }, 1);
+    }
     private void loadConfig() {
         File configFile = new File(getDataFolder(), "config.yml");
         if (!configFile.exists()) {
@@ -60,7 +70,6 @@ public final class Hydeath extends JavaPlugin implements Listener {
             unlimitedLifetime = itemSettingsSection.getBoolean("unlimitedLifetime", true);
         }
     }
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String label, String[] args) {
         if (command.getName().equalsIgnoreCase("hydeathreload")) {
@@ -77,10 +86,6 @@ public final class Hydeath extends JavaPlugin implements Listener {
         Player player = event.getEntity();
         String playerName = player.getName();
 
-        // Prevent the player's inventory from dropping
-        event.setKeepInventory(true);
-        event.setKeepLevel(true);
-
         // Get player's location and world
         int x = player.getLocation().getBlockX();
         int y = player.getLocation().getBlockY();
@@ -95,7 +100,6 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 ChatColor.AQUA + worldName + ChatColor.GRAY + ".";
 
         player.sendMessage(message);
-
 
         // Store the player's inventory contents
         ItemStack[] originalInventory = player.getInventory().getContents();
