@@ -1,4 +1,4 @@
-Hydeath" is an essential plugin designed for Spigot, Paper, and Folia servers. It significantly enhances the gameplay experience by mitigating the frustration of losing items upon death, making the process of recovering lost items seamless and efficient.
+Hydeath is an essential plugin designed for Spigot, Paper, and Folia servers. It significantly enhances the gameplay experience by mitigating the frustration of losing items upon death, making the process of recovering lost items seamless and efficient.
 
 ### config.yml
 ```yml
