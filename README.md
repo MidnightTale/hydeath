@@ -1,6 +1,6 @@
-hydeath is a plugin for spigot, paper, folia will make madless about lossing stuff when they die easier to get item back.
+Hydeath" is an essential plugin designed for Spigot, Paper, and Folia servers. It significantly enhances the gameplay experience by mitigating the frustration of losing items upon death, making the process of recovering lost items seamless and efficient.
 
-# config.yml
+### config.yml
 ```yml
 # Spread amount for dropped items
 # Adjust how much the dropped items spread out when a player dies
