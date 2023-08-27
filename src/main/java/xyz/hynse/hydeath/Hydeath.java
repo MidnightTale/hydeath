@@ -1,6 +1,5 @@
 package xyz.hynse.hydeath;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -90,9 +89,9 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
         // Create the custom death message
         String deathMessage = color1 + deathSymbol + color4 + defaultDeathMessage +
-                color3_1 + " (" + color3_1 + "X: " + color2  + x + color3_2 + ", " +
-                color3_1 + "Y: " + color2  + y + color3_2 + ", " +
-                color3_1 + "Z: " + color2  + z + color3_1 + " in " +
+                color3_1 + " (" + color3_1 + "X:" + color2  + x + color3_2 + ", " +
+                color3_1 + "Y:" + color2  + y + color3_2 + ", " +
+                color3_1 + "Z:" + color2  + z + color3_1 + " in " +
                 color2 + worldName + color3_1 + ")";
 
         // Set the custom death message
