@@ -1,22 +1,19 @@
 package xyz.hynse.hydeath;
+
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.ExperienceOrb;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +30,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        setGameRuleForAllWorlds("keepInventory", "true");
+        //setGameRuleForAllWorlds("keepInventory", "true");
 
         loadConfig();
         getServer().getPluginManager().registerEvents(this, this);
@@ -41,20 +38,20 @@ public final class Hydeath extends JavaPlugin implements Listener {
         // Register the reload command
         Objects.requireNonNull(getCommand("hydeathreload")).setExecutor(this);
     }
-    @EventHandler
-    public void onPluginDisable(PluginDisableEvent event) {
-        Plugin plugin = event.getPlugin();
-        if (plugin == this) {
-            setGameRuleForAllWorlds("keepInventory", "false");
-        }
-    }
-    private void setGameRuleForAllWorlds(String ruleName, String ruleValue) {
-        Scheduler.runGlobal(this, () -> {
-        for (World world : Bukkit.getWorlds()) {
-            world.setGameRuleValue(ruleName, ruleValue);
-        }
-        }, 1);
-    }
+//    @EventHandler
+//    public void onPluginDisable(PluginDisableEvent event) {
+//        Plugin plugin = event.getPlugin();
+//        if (plugin == this) {
+//            setGameRuleForAllWorlds("keepInventory", "false");
+//        }
+//    }
+//    private void setGameRuleForAllWorlds(String ruleName, String ruleValue) {
+//        Scheduler.runGlobal(this, () -> {
+//        for (World world : Bukkit.getWorlds()) {
+//            world.setGameRuleValue(ruleName, ruleValue);
+//        }
+//        }, 1);
+//    }
     private void loadConfig() {
         File configFile = new File(getDataFolder(), "config.yml");
         if (!configFile.exists()) {
@@ -86,7 +83,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        setGameRuleForAllWorlds("keepInventory", "true");
+//        setGameRuleForAllWorlds("keepInventory", "true");
         Player player = event.getEntity();
         String playerName = player.getName();
 
@@ -116,7 +113,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
         ItemStack[] originalInventory = player.getInventory().getContents();
 
         // Clear the player's inventory
-        player.getInventory().clear();
+        event.getDrops().clear();
 
         // Drop the stored items
         for (ItemStack itemStack : originalInventory) {
