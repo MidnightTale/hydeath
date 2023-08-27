@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.world.WorldLoadEvent;
-import org.bukkit.event.world.WorldUnloadEvent;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.ExperienceOrb;
@@ -33,23 +33,26 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        Scheduler.runGlobal(this, () -> {
-            for (World world : Bukkit.getWorlds()) {
-                world.setGameRuleValue("keepInventory", "true");
-            }
-        }, 1);
+        setGameRuleForAllWorlds("keepInventory", "true");
+
         loadConfig();
         getServer().getPluginManager().registerEvents(this, this);
 
         // Register the reload command
         Objects.requireNonNull(getCommand("hydeathreload")).setExecutor(this);
     }
-    @Override
-    public void onDisable() {
+    @EventHandler
+    public void onPluginDisable(PluginDisableEvent event) {
+        Plugin plugin = event.getPlugin();
+        if (plugin == this) {
+            setGameRuleForAllWorlds("keepInventory", "false");
+        }
+    }
+    private void setGameRuleForAllWorlds(String ruleName, String ruleValue) {
         Scheduler.runGlobal(this, () -> {
-            for (World world : Bukkit.getWorlds()) {
-                world.setGameRuleValue("keepInventory", "false");
-            }
+        for (World world : Bukkit.getWorlds()) {
+            world.setGameRuleValue(ruleName, ruleValue);
+        }
         }, 1);
     }
     private void loadConfig() {
@@ -83,6 +86,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
+        setGameRuleForAllWorlds("keepInventory", "true");
         Player player = event.getEntity();
         String playerName = player.getName();
 
@@ -90,16 +94,22 @@ public final class Hydeath extends JavaPlugin implements Listener {
         int x = player.getLocation().getBlockX();
         int y = player.getLocation().getBlockY();
         int z = player.getLocation().getBlockZ();
+        String deathSymbol = "\u2620";
         String worldName = player.getWorld().getName();
+        String color1 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#fc0303"));
+        String color2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ff3333"));
+        String color3 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#dedede"));
 
-        String message = ChatColor.GRAY + "[" + ChatColor.RED + "☠" + ChatColor.GRAY + "] " +
-                ChatColor.YELLOW + playerName + ChatColor.RED + " has died at " +
-                ChatColor.WHITE + "X: " + ChatColor.GRAY + x + ChatColor.DARK_GRAY + ", " +
-                ChatColor.WHITE + "Y: " + ChatColor.GRAY + y + ChatColor.DARK_GRAY + ", " +
-                ChatColor.WHITE + "Z: " + ChatColor.GRAY + z + ChatColor.WHITE + " in " +
-                ChatColor.AQUA + worldName + ChatColor.GRAY + ".";
 
-        player.sendMessage(message);
+        String message = color1 + deathSymbol + color2 + playerName + color3 + " has died at " +
+                color3 + "X: " + color2  + x + color3 + ", " +
+                color3 + "Y: " + color2  + y + color3 + ", " +
+                color3 + "Z: " + color2  + z + color3 + " in " +
+                color2 + worldName + color3 + ".";
+
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            onlinePlayer.sendMessage(message);
+        }
 
         // Store the player's inventory contents
         ItemStack[] originalInventory = player.getInventory().getContents();
