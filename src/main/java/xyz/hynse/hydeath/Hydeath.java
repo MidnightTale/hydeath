@@ -94,14 +94,15 @@ public final class Hydeath extends JavaPlugin implements Listener {
         int x = player.getLocation().getBlockX();
         int y = player.getLocation().getBlockY();
         int z = player.getLocation().getBlockZ();
-        String deathSymbol = "\u2620";
+        String deathSymbol = "\u2620 ";
         String worldName = player.getWorld().getName();
         String color1 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#fc0303"));
-        String color2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ff3333"));
+        String color2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ff6e6e"));
         String color3 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#dedede"));
+        String color4 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ffffff"));
 
 
-        String message = color1 + deathSymbol + color2 + playerName + color3 + " has died at " +
+        String message = color1 + deathSymbol + color4 + playerName + color3 + " has died at " +
                 color3 + "X: " + color2  + x + color3 + ", " +
                 color3 + "Y: " + color2  + y + color3 + ", " +
                 color3 + "Z: " + color2  + z + color3 + " in " +
