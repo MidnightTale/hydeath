@@ -40,13 +40,6 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
         // Register the reload command
         Objects.requireNonNull(getCommand("hydeathreload")).setExecutor(this);
-
-        setKeepInventoryForAllWorlds(true);
-    }
-
-    @Override
-    public void onDisable() {
-        setKeepInventoryForAllWorlds(false);
     }
 
     private void loadConfig() {
@@ -68,33 +61,6 @@ public final class Hydeath extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler
-    public void onWorldLoad(WorldLoadEvent event) {
-        setKeepInventory(event.getWorld(), true);
-    }
-
-    @EventHandler
-    public void onWorldUnload(WorldUnloadEvent event) {
-        setKeepInventory(event.getWorld(), false);
-    }
-
-    @EventHandler
-    public void onPluginDisable(PluginDisableEvent event) {
-        if (event.getPlugin().equals(this)) {
-            setKeepInventoryForAllWorlds(false);
-        }
-    }
-
-    private void setKeepInventoryForAllWorlds(boolean value) {
-        for (World world : getServer().getWorlds()) {
-            setKeepInventory(world, value);
-        }
-    }
-
-    private void setKeepInventory(World world, boolean value) {
-        world.setGameRuleValue("keepInventory", String.valueOf(value));
-    }
-
     @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String label, String[] args) {
         if (command.getName().equalsIgnoreCase("hydeathreload")) {
@@ -110,6 +76,10 @@ public final class Hydeath extends JavaPlugin implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         String playerName = player.getName();
+
+        // Prevent the player's inventory from dropping
+        event.setKeepInventory(true);
+        event.setKeepLevel(true);
 
         // Get player's location and world
         int x = player.getLocation().getBlockX();
