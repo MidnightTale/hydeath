@@ -30,7 +30,6 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        //setGameRuleForAllWorlds("keepInventory", "true");
 
         loadConfig();
         getServer().getPluginManager().registerEvents(this, this);
@@ -38,20 +37,6 @@ public final class Hydeath extends JavaPlugin implements Listener {
         // Register the reload command
         Objects.requireNonNull(getCommand("hydeathreload")).setExecutor(this);
     }
-//    @EventHandler
-//    public void onPluginDisable(PluginDisableEvent event) {
-//        Plugin plugin = event.getPlugin();
-//        if (plugin == this) {
-//            setGameRuleForAllWorlds("keepInventory", "false");
-//        }
-//    }
-//    private void setGameRuleForAllWorlds(String ruleName, String ruleValue) {
-//        Scheduler.runGlobal(this, () -> {
-//        for (World world : Bukkit.getWorlds()) {
-//            world.setGameRuleValue(ruleName, ruleValue);
-//        }
-//        }, 1);
-//    }
     private void loadConfig() {
         File configFile = new File(getDataFolder(), "config.yml");
         if (!configFile.exists()) {
@@ -83,7 +68,6 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-//        setGameRuleForAllWorlds("keepInventory", "true");
         Player player = event.getEntity();
         String playerName = player.getName();
 
@@ -91,23 +75,28 @@ public final class Hydeath extends JavaPlugin implements Listener {
         int x = player.getLocation().getBlockX();
         int y = player.getLocation().getBlockY();
         int z = player.getLocation().getBlockZ();
+
         String deathSymbol = "\u2620 ";
         String worldName = player.getWorld().getName();
         String color1 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#fc0303"));
         String color2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ff6e6e"));
         String color3 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#dedede"));
+        String color3_1 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#d1d1d1"));
+        String color3_2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#b5b5b5"));
         String color4 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ffffff"));
 
+        // Get the default death message from the event
+        String defaultDeathMessage = event.getDeathMessage();
 
-        String message = color1 + deathSymbol + color4 + playerName + color3 + " has died at " +
-                color3 + "X: " + color2  + x + color3 + ", " +
-                color3 + "Y: " + color2  + y + color3 + ", " +
-                color3 + "Z: " + color2  + z + color3 + " in " +
-                color2 + worldName + color3 + ".";
+        // Create the custom death message
+        String deathMessage = color1 + deathSymbol + color4 + defaultDeathMessage +
+                color3_1 + " (" + color3_1 + "X: " + color2  + x + color3_2 + ", " +
+                color3_1 + "Y: " + color2  + y + color3_2 + ", " +
+                color3_1 + "Z: " + color2  + z + color3_1 + " in " +
+                color2 + worldName + color3_1 + ")";
 
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            onlinePlayer.sendMessage(message);
-        }
+        // Set the custom death message
+        event.setDeathMessage(deathMessage);
 
         // Store the player's inventory contents
         ItemStack[] originalInventory = player.getInventory().getContents();
