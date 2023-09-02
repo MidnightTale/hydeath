@@ -1,5 +1,6 @@
 package xyz.hynse.hydeath;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -74,25 +75,21 @@ public final class Hydeath extends JavaPlugin implements Listener {
         int x = player.getLocation().getBlockX();
         int y = player.getLocation().getBlockY();
         int z = player.getLocation().getBlockZ();
-
         String deathSymbol = "\u2620 ";
         String worldName = player.getWorld().getName();
         String color1 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#fc0303"));
-        String color2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ff6e6e"));
-        String color3 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#dedede"));
+        String color2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ffa1ec"));
+        String color3 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#5c5c5c"));
         String color3_1 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#d1d1d1"));
         String color3_2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#b5b5b5"));
         String color4 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ffffff"));
+        String text2nd = "\u2514";
 
         // Get the default death message from the event
         String defaultDeathMessage = event.getDeathMessage();
 
         // Create the custom death message
-        String deathMessage = color1 + deathSymbol + color4 + defaultDeathMessage +
-                color3_1 + " (" + color3_1 + "X:" + color2  + x + color3_2 + ", " +
-                color3_1 + "Y:" + color2  + y + color3_2 + ", " +
-                color3_1 + "Z:" + color2  + z + color3_1 + " in " +
-                color2 + worldName + color3_1 + ")";
+        String deathMessage =  color1 + deathSymbol + " " + color4 + defaultDeathMessage + "\n " + color3 + text2nd + color4 + " [" + ChatColor.BOLD +"Position: " + ChatColor.RESET + color2 + x + color3 + ", " + color2 + y + color3 + ", " + color2 +  z + color4 + "]";
 
         // Set the custom death message
         event.setDeathMessage(deathMessage);
