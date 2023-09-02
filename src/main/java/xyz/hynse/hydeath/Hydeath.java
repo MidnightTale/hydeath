@@ -75,7 +75,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
         int x = player.getLocation().getBlockX();
         int y = player.getLocation().getBlockY();
         int z = player.getLocation().getBlockZ();
-        String deathSymbol = "\u2620 ";
+        String deathSymbol = "\u2620";
         String worldName = player.getWorld().getName();
         String color1 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#fc0303"));
         String color2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ffa1ec"));
@@ -89,7 +89,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
         String defaultDeathMessage = event.getDeathMessage();
 
         // Create the custom death message
-        String deathMessage =  color1 + deathSymbol + " " + color4 + defaultDeathMessage + "\n " + color3 + text2nd + color4 + " [" + ChatColor.BOLD +"Position: " + ChatColor.RESET + color2 + x + color3 + ", " + color2 + y + color3 + ", " + color2 +  z + color4 + "]";
+        String deathMessage =  color1 + deathSymbol + " " + color4 + defaultDeathMessage + "\n" + color3 + text2nd + color4 + " [" + ChatColor.BOLD +"Position: " + ChatColor.RESET + color2 + x + color3 + ", " + color2 + y + color3 + ", " + color2 +  z + color4 + "]";
 
         // Set the custom death message
         event.setDeathMessage(deathMessage);
