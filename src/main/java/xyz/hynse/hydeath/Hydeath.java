@@ -79,29 +79,31 @@ public final class Hydeath extends JavaPlugin implements Listener {
         String deathSymbol = "\u2620";
         String worldName = player.getWorld().getName();
         String color1 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#fc0303"));
-        String color2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ffa1ec"));
         String color3 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#5c5c5c"));
-        String color3_1 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#d1d1d1"));
-        String color3_2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#b5b5b5"));
         String color4 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ffffff"));
         String text2nd = "\u2514";
         String worldcolor;
+        String worldcolor2;
         String formattedWorldName;
         switch (worldName.toLowerCase()) {
             case "world":
                 worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#46f057"));
+                worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#5dc267"));
                 formattedWorldName = "Overworld";
                 break;
             case "world_nether":
                 worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ff3826"));
+                worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#d4574c"));
                 formattedWorldName = "Nether";
                 break;
             case "world_the_end":
                 worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#af54ff"));
+                worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#8e62b5"));
                 formattedWorldName = "The End";
                 break;
             default:
                 worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#8a8a8a"));
+                worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#999999"));
                 formattedWorldName = "Unknown";
         }
 
@@ -109,7 +111,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
         String defaultDeathMessage = event.getDeathMessage();
 
         // Create the custom death message
-        String deathMessage = color1 + deathSymbol + " " + color4 + defaultDeathMessage + "\n" + color3 + text2nd + color4 + " [" + ChatColor.BOLD + worldcolor + formattedWorldName + color4 + ": " + ChatColor.RESET + color2 + x + color3 + ", " + color2 + y + color3 + ", " + color2 + z + color4 + "]";
+        String deathMessage = color1 + deathSymbol + " " + color4 + defaultDeathMessage + "\n" + color3 + text2nd + " [" + worldcolor + formattedWorldName + color3 + ": " + ChatColor.RESET + worldcolor2 + x + color3 + ", " + worldcolor2 + y + color3 + ", " + worldcolor2 + z + color3 + "]";
 
         // Set the custom death message
         event.setDeathMessage(deathMessage);
