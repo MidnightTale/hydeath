@@ -85,12 +85,31 @@ public final class Hydeath extends JavaPlugin implements Listener {
         String color3_2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#b5b5b5"));
         String color4 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ffffff"));
         String text2nd = "\u2514";
+        String worldcolor;
+        String formattedWorldName;
+        switch (worldName.toLowerCase()) {
+            case "world":
+                worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#46f057"));
+                formattedWorldName = "Overworld";
+                break;
+            case "world_nether":
+                worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ff3826"));
+                formattedWorldName = "Nether";
+                break;
+            case "world_the_end":
+                worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#af54ff"));
+                formattedWorldName = "The End";
+                break;
+            default:
+                worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#8a8a8a"));
+                formattedWorldName = "Unknown";
+        }
 
         // Get the default death message from the event
         String defaultDeathMessage = event.getDeathMessage();
 
         // Create the custom death message
-        String deathMessage = color1 + deathSymbol + " " + color4 + defaultDeathMessage + "\n" + color3 + text2nd + color4 + " [" + ChatColor.BOLD + "Position: " + ChatColor.RESET + color2 + x + color3 + ", " + color2 + y + color3 + ", " + color2 + z + color4 + "]" + color2 + worldName;
+        String deathMessage = color1 + deathSymbol + " " + color4 + defaultDeathMessage + "\n" + color3 + text2nd + color4 + " [" + ChatColor.BOLD + worldcolor + formattedWorldName + color4 + ": " + ChatColor.RESET + color2 + x + color3 + ", " + color2 + y + color3 + ", " + color2 + z + color4 + "]";
 
         // Set the custom death message
         event.setDeathMessage(deathMessage);
