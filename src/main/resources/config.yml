@@ -4,6 +4,8 @@
 # Adjust how much the dropped items spread out when a player dies
 spreadAmount: 0.2
 
+expDropPercent: 50
+
 # Item settings for dropped items
 itemSettings:
   canMobPickup: true   # Allow mobs to pick up the dropped items

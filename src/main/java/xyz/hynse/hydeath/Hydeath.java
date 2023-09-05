@@ -27,12 +27,14 @@ public final class Hydeath extends JavaPlugin implements Listener {
     private boolean invulnerable;
     private boolean glowing;
     private boolean unlimitedLifetime;
+    private int expDropPercent;
 
     @Override
     public void onEnable() {
 
         loadConfig();
         getServer().getPluginManager().registerEvents(this, this);
+        expDropPercent = getConfig().getInt("expDropPercent", 100);
 
         // Register the reload command
         Objects.requireNonNull(getCommand("hydeathreload")).setExecutor(this);
@@ -69,7 +71,6 @@ public final class Hydeath extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        String playerName = player.getName();
 
         // Get player's location and world
         int x = player.getLocation().getBlockX();
@@ -89,7 +90,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
         String defaultDeathMessage = event.getDeathMessage();
 
         // Create the custom death message
-        String deathMessage =  color1 + deathSymbol + " " + color4 + defaultDeathMessage + "\n" + color3 + text2nd + color4 + " [" + ChatColor.BOLD +"Position: " + ChatColor.RESET + color2 + x + color3 + ", " + color2 + y + color3 + ", " + color2 +  z + color4 + "]";
+        String deathMessage = color1 + deathSymbol + " " + color4 + defaultDeathMessage + "\n" + color3 + text2nd + color4 + " [" + ChatColor.BOLD + "Position: " + ChatColor.RESET + color2 + x + color3 + ", " + color2 + y + color3 + ", " + color2 + z + color4 + "]" + color2 + worldName;
 
         // Set the custom death message
         event.setDeathMessage(deathMessage);
@@ -117,16 +118,19 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 );
                 item.setVelocity(velocity);
 
-                int playerTotalExp = ExperienceUtil.getPlayerExp(player);
-                while (playerTotalExp > 0) {
-                    int currentExp = Math.min(playerTotalExp, 100);
-                    player.getWorld().spawn(player.getLocation(), ExperienceOrb.class).setExperience(currentExp);
-                    playerTotalExp -= currentExp;
-                }
+                int playerTotalExp = ExperienceUtil.getPlayerExp(player); // Get the player's total experience
+                int expToDrop = (playerTotalExp * expDropPercent) / 100; // Calculate experience to drop based on the percentage
 
                 // Clear player's experience
                 player.setLevel(0);
                 player.setExp(0);
+
+                // Drop the experience orbs
+                while (expToDrop > 0) {
+                    int orbValue = Math.min(expToDrop, 100);  // Orbs can only hold a maximum of 100 experience
+                    player.getWorld().spawn(player.getLocation(), ExperienceOrb.class).setExperience(orbValue);
+                    expToDrop -= orbValue;
+                }
             }
         }
     }

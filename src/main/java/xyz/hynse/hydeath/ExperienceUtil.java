@@ -7,10 +7,8 @@ public class ExperienceUtil {
         int exp = 0;
         int level = player.getLevel();
 
-        // Get the amount of XP in the current level
         exp += getExpAtLevel(level);
 
-        // Get the amount of XP towards the next level
         exp += Math.round(getExpToLevelUp(level) * player.getExp());
 
         return exp;
