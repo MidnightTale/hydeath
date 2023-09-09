@@ -101,6 +101,11 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#8e62b5"));
                 formattedWorldName = "The End";
                 break;
+            case "world_bracken_sanctum":
+                worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#d4ff00"));
+                worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#a5bd2d"));
+                formattedWorldName = "Eclipsia";
+                break;
             default:
                 worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#8a8a8a"));
                 worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#999999"));
@@ -116,33 +121,48 @@ public final class Hydeath extends JavaPlugin implements Listener {
         // Set the custom death message
         event.setDeathMessage(deathMessage);
 
+        // Check if the player died in the "world_bracken_sanctum"
+        String worldsanctum = player.getWorld().getName().toLowerCase();
+        if (!worldsanctum.equals("world_bracken_sanctum")) {
+            return; // Player did not die in the specified world, do nothing
+        }
+
+        // Get the percentage of items to keep from the config
+        int percentToKeep = getConfig().getInt("sanctumpercentToKeep", 50);
+
         // Store the player's inventory contents
         ItemStack[] originalInventory = player.getInventory().getContents();
 
         // Clear the player's inventory
         event.getDrops().clear();
 
-        // Drop the stored items
+        // Iterate through the inventory and decide whether to keep or drop items based on the configured percentage
         for (ItemStack itemStack : originalInventory) {
             if (itemStack != null) {
-                Item item = player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
-                item.setCanMobPickup(canMobPickup);
-                item.setInvulnerable(invulnerable);
-                item.setGlowing(glowing);
-                item.setUnlimitedLifetime(unlimitedLifetime);
+                if (Math.random() * 100 < percentToKeep) { // Keep the item
+                    player.getInventory().addItem(itemStack.clone());
+                } else { // Drop the item
+                    Item item = player.getWorld().dropItemNaturally(player.getLocation(), itemStack.clone());
+                    item.setCanMobPickup(canMobPickup);
+                    item.setInvulnerable(invulnerable);
+                    item.setGlowing(glowing);
+                    item.setUnlimitedLifetime(unlimitedLifetime);
 
-                // Adjust item's velocity for spread
-                Vector velocity = new Vector(
-                        Math.random() * spreadAmount - spreadAmount / 2,
-                        Math.random() * (spreadAmount / 3) - (spreadAmount / 3) / 2,
-                        Math.random() * spreadAmount - spreadAmount / 2
-                );
-                item.setVelocity(velocity);
+                    // Adjust item's velocity for spread
+                    Vector velocity = new Vector(
+                            Math.random() * spreadAmount - spreadAmount / 2,
+                            Math.random() * (spreadAmount / 3) - (spreadAmount / 3) / 2,
+                            Math.random() * spreadAmount - spreadAmount / 2
+                    );
+                    item.setVelocity(velocity);
+                }
+            }
+        }
 
-                int playerTotalExp = ExperienceUtil.getPlayerExp(player); // Get the player's total experience
-                int expToDrop = (playerTotalExp * expDropPercent) / 100; // Calculate experience to drop based on the percentage
+        int playerTotalExp = ExperienceUtil.getPlayerExp(player); // Get the player's total experience
+        int expToDrop = (playerTotalExp * expDropPercent) / 100; // Calculate experience to drop based on the percentage
 
-                // Clear player's experience
+        // Clear player's experience
                 player.setLevel(0);
                 player.setExp(0);
 
@@ -154,5 +174,3 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 }
             }
         }
-    }
-}

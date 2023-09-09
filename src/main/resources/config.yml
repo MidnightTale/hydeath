@@ -12,3 +12,7 @@ itemSettings:
   invulnerable: true   # Make dropped items invulnerable
   glowing: true        # Make dropped items glow
   unlimitedLifetime: true  # Make dropped items never despawn
+
+worldSettings:
+  world_bracken_sanctum:
+    keepPercent: 50
