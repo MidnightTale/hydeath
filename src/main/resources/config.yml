@@ -12,6 +12,6 @@ itemSettings:
   invulnerable: true   # Make dropped items invulnerable
   glowing: true        # Make dropped items glow
   unlimitedLifetime: true  # Make dropped items never despawn
-  canOwnerPickupOnly: true
-  canHopperPickup: false
-  canEntityPickup: false
+  canOwnerPickupOnly: true # Allow only owner of death item to pickup
+  # canHopperPickup: false #in dev
+  # canEntityPickup: false #in dev

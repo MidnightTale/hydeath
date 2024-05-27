@@ -222,6 +222,12 @@ public final class Hydeath extends JavaPlugin implements Listener {
                     droppedItems.add(item);
                     playerItems.put(playerUUID, droppedItems);
                 }
+                if (canHopperPickup || canEntityPickup) {
+                    item.setMetadata("hydeath", new FixedMetadataValue(this, "item"));
+                    droppedItems.add(item);
+                    playerItems.put(playerUUID, droppedItems);
+                }
+
 
                 int playerTotalExp = ExperienceUtil.getPlayerExp(player); // Get the player's total experience
                 int expToDrop = (playerTotalExp * expDropPercent) / 100; // Calculate experience to drop based on the percentage
@@ -251,19 +257,19 @@ public final class Hydeath extends JavaPlugin implements Listener {
         }
     }
 
-    @EventHandler
-    public void onHopperPickup(InventoryPickupItemEvent event) {
-        getLogger().info("HopperPickup event triggered.");
-        if (!canHopperPickup && event.getInventory().getHolder() instanceof org.bukkit.block.Hopper) {
-            getLogger().info("Hopper pick-up cancelled.");
-            event.setCancelled(true);
-        }
-    }
+//    @EventHandler
+//    public void onHopperPickup(InventoryPickupItemEvent event) {
+//        Item item = event.getItem();
+//        if (!canHopperPickup && event.getInventory().getHolder() instanceof org.bukkit.block.Hopper  && item.hasMetadata("hydeath")) {
+//            event.setCancelled(true);
+//        }
+//    }
 
-    @EventHandler
-    public void onEntityPickupItem(EntityPickupItemEvent event) {
-        if (!canEntityPickup && !(event.getEntity() instanceof Player)) {
-            event.setCancelled(true);
-        }
-    }
+//    @EventHandler
+//    public void onEntityPickupItem(EntityPickupItemEvent event) {
+//        Item item = event.getItem();
+//        if (!canEntityPickup && !(event.getEntity() instanceof Player) && item.hasMetadata("hydeath")) {
+//            event.setCancelled(true);
+//        }
+//    }
 }
