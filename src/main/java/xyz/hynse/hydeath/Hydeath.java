@@ -107,12 +107,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 for (Entity entity : player.getNearbyEntities(range, range, range)) {
                     if (entity instanceof Item) {
                         Item item = (Item) entity;
-                        if (item.hasMetadata("owner")) {
-                            UUID ownerUUID = UUID.fromString(item.getMetadata("owner").get(0).asString());
-                            if (ownerUUID.equals(player.getUniqueId())) {
-                                nearbyItems.add(item);
-                            }
-                        }
+                        nearbyItems.add(item);
                     }
                 }
 
@@ -127,12 +122,10 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 return true;
             } else {
                 sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
-                return true;
             }
         }
-        return false;
+        return true;
     }
-
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
