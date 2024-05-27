@@ -4,11 +4,12 @@
 # Adjust how much the dropped items spread out when a player dies
 spreadAmount: 0.2
 
-expDropPercent: 50
+expDropPercent: 70
 
 # Item settings for dropped items
 itemSettings:
-  canMobPickup: true   # Allow mobs to pick up the dropped items
+  canMobPickup: false   # Allow mobs to pick up the dropped items
   invulnerable: true   # Make dropped items invulnerable
   glowing: true        # Make dropped items glow
   unlimitedLifetime: true  # Make dropped items never despawn
+  canOwnerPickupOnly: true

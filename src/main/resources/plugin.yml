@@ -9,3 +9,9 @@ commands:
   hydeathreload:
     description: Reloads the Hydeath configuration
     usage: /hydeathreload
+  unlock:
+    description: unlock death item to allow can be pickup by other player
+    usage: /unlock
+  unlocknear:
+    description: unlock nearby 10 block death item to allow can be pickup by other player
+    usage: /unlocknear <radius>

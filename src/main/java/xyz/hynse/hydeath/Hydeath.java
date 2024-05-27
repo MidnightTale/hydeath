@@ -1,24 +1,28 @@
 package xyz.hynse.hydeath;
 
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.Objects;
+import java.util.*;
 
 public final class Hydeath extends JavaPlugin implements Listener {
 
@@ -27,7 +31,9 @@ public final class Hydeath extends JavaPlugin implements Listener {
     private boolean invulnerable;
     private boolean glowing;
     private boolean unlimitedLifetime;
+    private boolean canOwnerPickupOnly;
     private int expDropPercent;
+    private Map<UUID, List<Item>> playerItems = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -51,10 +57,11 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
         ConfigurationSection itemSettingsSection = config.getConfigurationSection("itemSettings");
         if (itemSettingsSection != null) {
-            canMobPickup = itemSettingsSection.getBoolean("canMobPickup", true);
+            canMobPickup = itemSettingsSection.getBoolean("canMobPickup", false);
             invulnerable = itemSettingsSection.getBoolean("invulnerable", true);
             glowing = itemSettingsSection.getBoolean("glowing", true);
             unlimitedLifetime = itemSettingsSection.getBoolean("unlimitedLifetime", true);
+            canOwnerPickupOnly = itemSettingsSection.getBoolean("canOwnerPickupOnly", true);
         }
     }
     @Override
@@ -64,13 +71,77 @@ public final class Hydeath extends JavaPlugin implements Listener {
             loadConfig();
             sender.sendMessage("Hydeath configuration reloaded.");
             return true;
+        } else if (command.getName().equalsIgnoreCase("unlock")) {
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                UUID playerUUID = player.getUniqueId();
+
+                if (playerItems.containsKey(playerUUID)) {
+                    List<Item> items = playerItems.get(playerUUID);
+                    for (Item item : items) {
+                        item.removeMetadata("owner", this);
+                    }
+                    playerItems.remove(playerUUID);
+                    player.sendMessage(ChatColor.GREEN + "Your items have been unlocked and can now be picked up by other players.");
+                } else {
+                    player.sendMessage(ChatColor.RED + "You have no locked items.");
+                }
+                return true;
+            } else {
+                sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
+                return true;
+            }
+        } else if (command.getName().equalsIgnoreCase("unlocknear")) {
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                int range = 10; // Default range
+                if (args.length > 0) {
+                    try {
+                        range = Integer.parseInt(args[0]);
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage(ChatColor.RED + "Invalid range specified. Using default range (10 blocks).");
+                    }
+                }
+
+                List<Item> nearbyItems = new ArrayList<>();
+                for (Entity entity : player.getNearbyEntities(range, range, range)) {
+                    if (entity instanceof Item) {
+                        Item item = (Item) entity;
+                        if (item.hasMetadata("owner")) {
+                            UUID ownerUUID = UUID.fromString(item.getMetadata("owner").get(0).asString());
+                            if (ownerUUID.equals(player.getUniqueId())) {
+                                nearbyItems.add(item);
+                            }
+                        }
+                    }
+                }
+
+                if (!nearbyItems.isEmpty()) {
+                    for (Item item : nearbyItems) {
+                        item.removeMetadata("owner", this);
+                    }
+                    sender.sendMessage(ChatColor.GREEN + "Items near you have been unlocked and can now be picked up by other players.");
+                } else {
+                    sender.sendMessage(ChatColor.RED + "There are no locked items near you.");
+                }
+                return true;
+            } else {
+                sender.sendMessage(ChatColor.RED + "This command can only be used by players.");
+                return true;
+            }
         }
         return false;
     }
 
+
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        UUID playerUUID = player.getUniqueId();
+        World world = player.getWorld();
+        String keepInventoryValue = world.getGameRuleValue("keepInventory");
+        boolean keepInventory = Boolean.parseBoolean(keepInventoryValue);
+
 
         // Get player's location and world
         int x = player.getLocation().getBlockX();
@@ -120,7 +191,13 @@ public final class Hydeath extends JavaPlugin implements Listener {
         ItemStack[] originalInventory = player.getInventory().getContents();
 
         // Clear the player's inventory
-        event.getDrops().clear();
+        if (keepInventory) {
+            player.getInventory().clear();
+        } else {
+            event.getDrops().clear();
+        }
+
+        List<Item> droppedItems = new ArrayList<>();
 
         // Drop the stored items
         for (ItemStack itemStack : originalInventory) {
@@ -139,6 +216,12 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 );
                 item.setVelocity(velocity);
 
+                if (canOwnerPickupOnly) {
+                    item.setMetadata("owner", new FixedMetadataValue(this, player.getUniqueId().toString()));
+                    droppedItems.add(item);
+                    playerItems.put(playerUUID, droppedItems);
+                }
+
                 int playerTotalExp = ExperienceUtil.getPlayerExp(player); // Get the player's total experience
                 int expToDrop = (playerTotalExp * expDropPercent) / 100; // Calculate experience to drop based on the percentage
 
@@ -152,6 +235,17 @@ public final class Hydeath extends JavaPlugin implements Listener {
                     player.getWorld().spawn(player.getLocation(), ExperienceOrb.class).setExperience(orbValue);
                     expToDrop -= orbValue;
                 }
+            }
+        }
+    }
+    @EventHandler
+    public void onPlayerPickupItem(PlayerPickupItemEvent event) {
+        Item item = event.getItem();
+        Player player = event.getPlayer();
+        if (item.hasMetadata("owner")) {
+            UUID ownerUUID = UUID.fromString(item.getMetadata("owner").get(0).asString());
+            if (!player.getUniqueId().equals(ownerUUID)) {
+                event.setCancelled(true);
             }
         }
     }
