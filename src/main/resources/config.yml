@@ -14,4 +14,4 @@ itemSettings:
   unlimitedLifetime: true  # Make dropped items never despawn
   canOwnerPickupOnly: true
   canHopperPickup: false
-  canEntityPickup: true
+  canEntityPickup: false
