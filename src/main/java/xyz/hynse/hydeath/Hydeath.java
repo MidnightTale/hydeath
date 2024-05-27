@@ -35,8 +35,8 @@ public final class Hydeath extends JavaPlugin implements Listener {
     private boolean glowing;
     private boolean unlimitedLifetime;
     private boolean canOwnerPickupOnly;
-    private boolean canHopperPickup;
-    private boolean canEntityPickup;
+//    private boolean canHopperPickup;
+//    private boolean canEntityPickup;
     private int expDropPercent;
     private Map<UUID, List<Item>> playerItems = new HashMap<>();
 
@@ -67,8 +67,8 @@ public final class Hydeath extends JavaPlugin implements Listener {
             glowing = itemSettingsSection.getBoolean("glowing", true);
             unlimitedLifetime = itemSettingsSection.getBoolean("unlimitedLifetime", true);
             canOwnerPickupOnly = itemSettingsSection.getBoolean("canOwnerPickupOnly", true);
-            canHopperPickup = itemSettingsSection.getBoolean("canOwnerPickupOnly", false);
-            canEntityPickup = itemSettingsSection.getBoolean("canEntityPickup", false);
+//            canHopperPickup = itemSettingsSection.getBoolean("canOwnerPickupOnly", false);
+//            canEntityPickup = itemSettingsSection.getBoolean("canEntityPickup", false);
         }
     }
     @Override
@@ -222,11 +222,11 @@ public final class Hydeath extends JavaPlugin implements Listener {
                     droppedItems.add(item);
                     playerItems.put(playerUUID, droppedItems);
                 }
-                if (canHopperPickup || canEntityPickup) {
-                    item.setMetadata("hydeath", new FixedMetadataValue(this, "item"));
-                    droppedItems.add(item);
-                    playerItems.put(playerUUID, droppedItems);
-                }
+//                if (canHopperPickup || canEntityPickup) {
+//                    item.setMetadata("hydeath", new FixedMetadataValue(this, "item"));
+//                    droppedItems.add(item);
+//                    playerItems.put(playerUUID, droppedItems);
+//                }
 
 
                 int playerTotalExp = ExperienceUtil.getPlayerExp(player); // Get the player's total experience
