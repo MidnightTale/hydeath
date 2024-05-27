@@ -252,8 +252,8 @@ public final class Hydeath extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onInventoryPickupItem(InventoryPickupItemEvent event) {
-        if (!canHopperPickup && event.getInventory().getType() == InventoryType.HOPPER) {
+    public void onHopperPickup(InventoryPickupItemEvent event) {
+        if (!canHopperPickup && event.getInventory().getHolder() instanceof org.bukkit.block.Hopper) {
             event.setCancelled(true);
         }
     }
