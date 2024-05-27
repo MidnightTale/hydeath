@@ -13,7 +13,10 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -32,6 +35,8 @@ public final class Hydeath extends JavaPlugin implements Listener {
     private boolean glowing;
     private boolean unlimitedLifetime;
     private boolean canOwnerPickupOnly;
+    private boolean canHopperPickup;
+    private boolean canEntityPickup;
     private int expDropPercent;
     private Map<UUID, List<Item>> playerItems = new HashMap<>();
 
@@ -62,6 +67,8 @@ public final class Hydeath extends JavaPlugin implements Listener {
             glowing = itemSettingsSection.getBoolean("glowing", true);
             unlimitedLifetime = itemSettingsSection.getBoolean("unlimitedLifetime", true);
             canOwnerPickupOnly = itemSettingsSection.getBoolean("canOwnerPickupOnly", true);
+            canHopperPickup = itemSettingsSection.getBoolean("canOwnerPickupOnly", false);
+            canEntityPickup = itemSettingsSection.getBoolean("canEntityPickup", false);
         }
     }
     @Override
@@ -201,6 +208,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 item.setGlowing(glowing);
                 item.setUnlimitedLifetime(unlimitedLifetime);
 
+
                 // Adjust item's velocity for spread
                 Vector velocity = new Vector(
                         Math.random() * spreadAmount - spreadAmount / 2,
@@ -240,6 +248,20 @@ public final class Hydeath extends JavaPlugin implements Listener {
             if (!player.getUniqueId().equals(ownerUUID)) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryPickupItem(InventoryPickupItemEvent event) {
+        if (!canHopperPickup && event.getInventory().getType() == InventoryType.HOPPER) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onEntityPickupItem(EntityPickupItemEvent event) {
+        if (!canEntityPickup && !(event.getEntity() instanceof Player)) {
+            event.setCancelled(true);
         }
     }
 }
