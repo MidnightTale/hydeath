@@ -13,10 +13,7 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -35,10 +32,12 @@ public final class Hydeath extends JavaPlugin implements Listener {
     private boolean glowing;
     private boolean unlimitedLifetime;
     private boolean canOwnerPickupOnly;
-//    private boolean canHopperPickup;
+    private boolean customDeathMessageEnabled;
+
+    //    private boolean canHopperPickup;
 //    private boolean canEntityPickup;
     private int expDropPercent;
-    private Map<UUID, List<Item>> playerItems = new HashMap<>();
+    private final Map<UUID, List<Item>> playerItems = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -59,6 +58,8 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
         // Load values from the config.yml
         spreadAmount = config.getDouble("spreadAmount", 0.2);
+        expDropPercent = config.getInt("expDropPercent", 100);
+        customDeathMessageEnabled = config.getBoolean("customDeathMessage", true);
 
         ConfigurationSection itemSettingsSection = config.getConfigurationSection("itemSettings");
         if (itemSettingsSection != null) {
@@ -67,10 +68,9 @@ public final class Hydeath extends JavaPlugin implements Listener {
             glowing = itemSettingsSection.getBoolean("glowing", true);
             unlimitedLifetime = itemSettingsSection.getBoolean("unlimitedLifetime", true);
             canOwnerPickupOnly = itemSettingsSection.getBoolean("canOwnerPickupOnly", true);
-//            canHopperPickup = itemSettingsSection.getBoolean("canOwnerPickupOnly", false);
-//            canEntityPickup = itemSettingsSection.getBoolean("canEntityPickup", false);
         }
     }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, Command command, @NotNull String label, String[] args) {
         if (command.getName().equalsIgnoreCase("hydeathreload")) {
@@ -79,8 +79,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
             sender.sendMessage("Hydeath configuration reloaded.");
             return true;
         } else if (command.getName().equalsIgnoreCase("unlock")) {
-            if (sender instanceof Player) {
-                Player player = (Player) sender;
+            if (sender instanceof Player player) {
                 UUID playerUUID = player.getUniqueId();
 
                 if (playerItems.containsKey(playerUUID)) {
@@ -99,8 +98,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
                 return true;
             }
         } else if (command.getName().equalsIgnoreCase("unlocknear")) {
-            if (sender instanceof Player) {
-                Player player = (Player) sender;
+            if (sender instanceof Player player) {
                 int range = 10; // Default range
                 if (args.length > 0) {
                     try {
@@ -112,8 +110,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
 
                 List<Item> nearbyItems = new ArrayList<>();
                 for (Entity entity : player.getNearbyEntities(range, range, range)) {
-                    if (entity instanceof Item) {
-                        Item item = (Item) entity;
+                    if (entity instanceof Item item) {
                         nearbyItems.add(item);
                     }
                 }
@@ -143,49 +140,47 @@ public final class Hydeath extends JavaPlugin implements Listener {
         boolean keepInventory = Boolean.parseBoolean(keepInventoryValue);
 
 
-        // Get player's location and world
-        int x = player.getLocation().getBlockX();
-        int y = player.getLocation().getBlockY();
-        int z = player.getLocation().getBlockZ();
-        String deathSymbol = "\u2620";
-        String worldName = player.getWorld().getName();
-        String color1 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#fc0303"));
-        String color3 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#5c5c5c"));
-        String color4 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ffffff"));
-        String text2nd = "\u2514";
-        String worldcolor;
-        String worldcolor2;
-        String formattedWorldName;
-        switch (worldName.toLowerCase()) {
-            case "world":
-                worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#46f057"));
-                worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#5dc267"));
-                formattedWorldName = "Overworld";
-                break;
-            case "world_nether":
-                worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ff3826"));
-                worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#d4574c"));
-                formattedWorldName = "Nether";
-                break;
-            case "world_the_end":
-                worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#af54ff"));
-                worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#8e62b5"));
-                formattedWorldName = "The End";
-                break;
-            default:
-                worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#8a8a8a"));
-                worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#999999"));
-                formattedWorldName = "Unknown";
+        if (customDeathMessageEnabled) {
+            int x = player.getLocation().getBlockX();
+            int y = player.getLocation().getBlockY();
+            int z = player.getLocation().getBlockZ();
+            String deathSymbol = "\u2620";
+            String worldName = player.getWorld().getName();
+            String color1 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#fc0303"));
+            String color3 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#5c5c5c"));
+            String color4 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ffffff"));
+            String text2nd = "\u2514";
+            String worldcolor;
+            String worldcolor2;
+            String formattedWorldName;
+
+            switch (worldName.toLowerCase()) {
+                case "world":
+                    worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#46f057"));
+                    worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#5dc267"));
+                    formattedWorldName = "Overworld";
+                    break;
+                case "world_nether":
+                    worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#ff3826"));
+                    worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#d4574c"));
+                    formattedWorldName = "Nether";
+                    break;
+                case "world_the_end":
+                    worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#af54ff"));
+                    worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#8e62b5"));
+                    formattedWorldName = "The End";
+                    break;
+                default:
+                    worldcolor = String.valueOf(net.md_5.bungee.api.ChatColor.of("#8a8a8a"));
+                    worldcolor2 = String.valueOf(net.md_5.bungee.api.ChatColor.of("#999999"));
+                    formattedWorldName = "Unknown";
+            }
+
+            String defaultDeathMessage = event.getDeathMessage();
+            String deathMessage = color1 + deathSymbol + " " + color4 + defaultDeathMessage + "\n" + color3 + text2nd + " [" + worldcolor + formattedWorldName + color3 + ": " + ChatColor.RESET + worldcolor2 + x + color3 + ", " + worldcolor2 + y + color3 + ", " + worldcolor2 + z + color3 + "]";
+            event.setDeathMessage(deathMessage);
         }
 
-        // Get the default death message from the event
-        String defaultDeathMessage = event.getDeathMessage();
-
-        // Create the custom death message
-        String deathMessage = color1 + deathSymbol + " " + color4 + defaultDeathMessage + "\n" + color3 + text2nd + " [" + worldcolor + formattedWorldName + color3 + ": " + ChatColor.RESET + worldcolor2 + x + color3 + ", " + worldcolor2 + y + color3 + ", " + worldcolor2 + z + color3 + "]";
-
-        // Set the custom death message
-        event.setDeathMessage(deathMessage);
 
         // Store the player's inventory contents
         ItemStack[] originalInventory = player.getInventory().getContents();
@@ -245,6 +240,7 @@ public final class Hydeath extends JavaPlugin implements Listener {
             }
         }
     }
+
     @EventHandler
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         Item item = event.getItem();

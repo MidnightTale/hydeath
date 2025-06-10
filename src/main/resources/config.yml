@@ -6,6 +6,9 @@ spreadAmount: 0.2
 
 expDropPercent: 70
 
+
+customDeathMessage: false
+
 # Item settings for dropped items
 itemSettings:
   canMobPickup: false   # Allow mobs to pick up the dropped items
